@@ -1,0 +1,12 @@
+---
+- name: Database backup directory exists
+  file:
+    path: "{{ backup_db_dir }}"
+    state: directory
+
+- name: Current timestamp is available
+  set_fact:
+    backup_db_now: "{{ lookup('pipe', 'date +%Y%m%dT%H%M%S') }}"
+
+- name: Create database backup
+  shell: "mysqldump --user='{{ backup_db_user }}' --password='{{ backup_db_password }}' '{{ backup_db_name }}' | gzip > '{{ backup_db_dir }}/db-{{ backup_db_now }}.sql.gz'"

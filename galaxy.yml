@@ -1,0 +1,16 @@
+namespace: stefnoten
+name: cpanel_deploy
+version: 1.0.0
+readme: README.md
+authors:
+  - Stef Noten
+description: Ansible collection for deploying WordPress sites to cPanel shared hosting
+tags:
+  - cpanel
+  - wordpress
+  - deployment
+  - hosting
+  - infrastructure
+repository: https://github.com/stefnoten/ansible-collection-cpanel-deploy
+build_ignore:
+  - .gitignore

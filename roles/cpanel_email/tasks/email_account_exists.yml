@@ -1,0 +1,11 @@
+---
+- name: "Email account '{{ email_account.username }}@{{ email_account.domain }}' exists"
+  command: "uapi --output=json Email add_pop email=\"{{ email_account.username }}\" domain=\"{{ email_account.domain }}\" password=\"{{ email_account.password }}\" send_welcome_email=0"
+  register: create_account_result
+  changed_when: "'already exists' not in create_account_result.stdout"
+  failed_when: "'already exists' not in create_account_result.stdout and (create_account_result.stdout | from_json).result.status != 1"
+
+- name: "Password for email account '{{ email_account.username }}@{{ email_account.domain }}' is up to date"
+  command: "uapi --output=json Email passwd_pop email=\"{{ email_account.username }}\" domain=\"{{ email_account.domain }}\" password=\"{{ email_account.password }}\""
+  register: set_password_result
+  failed_when: "(set_password_result.stdout | from_json).result.status != 1"

@@ -1,0 +1,25 @@
+---
+- name: WordPress is installed
+  command: "{{ wp_cli_bin }} core install --url='{{ wordpress_site_url }}' --title='{{ wordpress_site_title }}' --admin_user='{{ wordpress_admin_user }}' --admin_email='{{ wordpress_admin_email }}'"
+  args:
+    chdir: "{{ wordpress_deploy_dir }}"
+  register: wp_installed_result
+  changed_when: "'already installed' not in wp_installed_result.stdout"
+
+- name: WordPress database is up-to-date
+  command: "{{ wp_cli_bin }} core update-db"
+  args:
+    chdir: "{{ wordpress_deploy_dir }}"
+  register: wp_updated
+  changed_when: "'upgraded' in wp_updated.stdout"
+
+- name: Url rewrite works
+  import_tasks: url-rewrite.yml
+
+- name: "{{ wordpress_language }} language is active"
+  command: "{{ wp_cli_bin }} language core install {{ wordpress_language }} --activate"
+  args:
+    chdir: "{{ wordpress_deploy_dir }}"
+  register: wp_language_installation
+  changed_when: "'installed' in wp_language_installation.stdout or 'activated' in wp_language_installation.stdout"
+  when: "wordpress_language is defined"

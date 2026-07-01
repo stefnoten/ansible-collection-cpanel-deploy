@@ -1,0 +1,5 @@
+---
+- include_tasks: email_account_exists.yml
+  with_items: "{{ cpanel_email_accounts }}"
+  loop_control:
+    loop_var: email_account

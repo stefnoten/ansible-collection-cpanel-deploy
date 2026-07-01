@@ -1,0 +1,23 @@
+---
+- name: Destination directory exists
+  file:
+    dest: "{{ wp_cli_bin | dirname }}"
+    state: directory
+
+- name: Determine WP-CLI version
+  shell: "[ -f {{ wp_cli_bin }} ] && {{ wp_cli_bin }} cli version || echo 'Not installed'"
+  register: actual_wp_cli_version
+  changed_when: actual_wp_cli_version.stdout != 'WP-CLI ' + wp_cli_version
+
+- name: Remove {{ actual_wp_cli_version.stdout }}
+  file:
+    dest: "{{ wp_cli_bin }}"
+    state: absent
+  when: actual_wp_cli_version.changed
+
+- name: Install WP-CLI
+  get_url:
+    url: "{{ wp_cli_phar_url }}"
+    dest: "{{ wp_cli_bin }}"
+    mode: 0755
+  when: actual_wp_cli_version.changed

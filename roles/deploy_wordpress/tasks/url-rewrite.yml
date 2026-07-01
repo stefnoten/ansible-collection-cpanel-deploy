@@ -1,0 +1,19 @@
+- name: WordPress rewrite rules are queried
+  command: "{{ wp_cli_bin }} rewrite list"
+  args:
+    chdir: "{{ wordpress_deploy_dir }}"
+  register: wp_rewrite_rules
+  changed_when: false
+
+- name: WordPress rewrite rules are initialized
+  command: "{{ wp_cli_bin }} rewrite structure '/%postname%/'"
+  args:
+    chdir: "{{ wordpress_deploy_dir }}"
+  when: "'No rewrite rules' in wp_rewrite_rules.stderr"
+
+- name: WordPress rewrite rules are available in .htaccess
+  command: "{{ wp_cli_bin }} rewrite flush --hard"
+  args:
+    chdir: "{{ wordpress_deploy_dir }}"
+  register: wp_rewrite_flush_result
+  failed_when: "wp_rewrite_flush_result.stderr != ''"

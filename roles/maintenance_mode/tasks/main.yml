@@ -1,0 +1,26 @@
+---
+- name: Maintenance directory exists
+  file:
+    path: "{{ maintenance_mode_dir }}/web"
+    state: directory
+
+- name: Maintenance files are available
+  copy:
+    src: "{{ item }}"
+    dest: "{{ maintenance_mode_dir }}/web/{{ item }}"
+  with_items:
+    - .htaccess
+    - style.css
+
+- name: Maintenance template files are available
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ maintenance_mode_dir }}/web/{{ item }}"
+  with_items:
+    - maintenance.html
+
+- name: Site is in maintenance mode
+  file:
+    src: "{{ maintenance_mode_dir }}"
+    dest: "{{ maintenance_mode_public_symlink }}"
+    state: link

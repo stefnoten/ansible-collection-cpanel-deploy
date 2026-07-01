@@ -1,0 +1,10 @@
+---
+- name: Database exists
+  command: "uapi --output=json Mysql create_database name=\"{{ cpanel_mysql_db_name }}\""
+  register: create_db_result
+  changed_when: "'already exists' not in create_db_result.stdout"
+
+- include_tasks: user_exists.yml
+  with_items: "{{ cpanel_mysql_users }}"
+  loop_control:
+    loop_var: user

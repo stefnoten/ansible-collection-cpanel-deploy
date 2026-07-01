@@ -1,0 +1,1 @@
+wp_cli_phar_url: "https://github.com/wp-cli/wp-cli/releases/download/v{{ wp_cli_version }}/wp-cli-{{ wp_cli_version }}.phar"

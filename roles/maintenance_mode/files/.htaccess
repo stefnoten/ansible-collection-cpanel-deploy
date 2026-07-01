@@ -1,0 +1,8 @@
+RewriteEngine on
+RewriteCond %{REQUEST_URI} !\.css$
+RewriteCond %{SCRIPT_FILENAME} !maintenance.html
+RewriteRule .* /maintenance.html [L,R=503]
+ErrorDocument 503 /maintenance.html
+Header Set Cache-Control "max-age=0, no-store"
+Header Set Retry-After 300
+Header Set Refresh 120

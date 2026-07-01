@@ -1,0 +1,21 @@
+---
+- name: "User '{{ user.username }}' has valid password"
+  assert:
+    that: "{{ '%' not in user.password }}"
+    msg: "The cpanel api does not support passwords containing the '%' character"
+
+- name: "User '{{ user.username }}' exists"
+  command: "uapi --output=json Mysql create_user name=\"{{ user.username }}\" password=\"{{ user.password }}\""
+  register: create_user_result
+  changed_when: "'already exists' not in create_user_result.stdout"
+  failed_when: "'already exists' not in create_user_result.stdout and (create_user_result.stdout | from_json).result.status != 1"
+
+- name: "Password for user '{{ user.username }}' is up to date"
+  command: "uapi --output=json Mysql set_password user=\"{{ user.username }}\" password=\"{{ user.password }}\""
+  register: set_password_result
+  failed_when: "(set_password_result.stdout | from_json).result.status != 1"
+
+- name: "Privileges for user '{{ user.username }}' are up to date"
+  command: "uapi --output=json Mysql set_privileges_on_database user=\"{{ user.username }}\" database=\"{{ cpanel_mysql_db_name }}\" privileges=\"{{ user.privileges }}\""
+  register: set_privileges_result
+  failed_when: "(set_privileges_result.stdout | from_json).result.status != 1"
